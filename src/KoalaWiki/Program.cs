@@ -307,8 +307,11 @@ app.UseMiddleware<SseKeepAliveMiddleware>();
 
 app.MapMcp("/api/mcp");
 
+// Seed test data for integration testing in development environment
+await TestDataSeeder.SeedTestDataAsync(app);
 
 app.UseMiddleware<GlobalMiddleware>();
+
 
 // 添加权限中间件
 app.UseMiddleware<PermissionMiddleware>();
@@ -318,3 +321,6 @@ app.MapSitemap();
 app.MapFastApis();
 
 app.Run();
+
+// Make the implicit Program class public for testing
+public partial class Program { }
