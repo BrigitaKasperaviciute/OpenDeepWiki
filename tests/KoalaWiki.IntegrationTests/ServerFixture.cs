@@ -54,6 +54,11 @@ public sealed class ServerFixture : IAsyncLifetime, IDisposable
         startInfo.Environment["DB_TYPE"] = "sqlite";
         startInfo.Environment["DB_CONNECTION_STRING"] = $"Data Source={dbPath}";
 
+        // Set minimal AI configuration for tests (required by OpenAIOptions.InitConfig)
+        startInfo.Environment["CHAT_MODEL"] = Environment.GetEnvironmentVariable("CHAT_MODEL") ?? "gpt-4o-mini";
+        startInfo.Environment["CHAT_API_KEY"] = Environment.GetEnvironmentVariable("CHAT_API_KEY") ?? "test-key";
+        startInfo.Environment["ENDPOINT"] = Environment.GetEnvironmentVariable("ENDPOINT") ?? "https://api.openai.com/v1";
+
         _stdout.Clear();
         _stderr.Clear();
 
