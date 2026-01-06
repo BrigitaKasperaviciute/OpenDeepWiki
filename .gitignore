@@ -13,6 +13,9 @@
 *.userosscache
 *.sln.docstates
 
+# Allow root coverage.cobertura.xml to be committed
+!coverage.cobertura.xml
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -152,6 +155,8 @@ _TeamCity*
 coverage*.json
 coverage*.xml
 coverage*.info
+# Allow root coverage.cobertura.xml to be committed
+!coverage.cobertura.xml
 
 # Visual Studio code coverage results
 *.coverage
