@@ -472,3 +472,45 @@ This project is licensed under the MIT License. See [LICENSE](./LICENSE) for det
 
 
 
+---
+
+# Test Coverage (HTML)
+
+Generate and view a local HTML coverage report for the integration tests.
+
+## Generate
+
+Windows PowerShell:
+
+```powershell
+./coverage_report.ps1
+```
+
+This script will:
+- Ensure `reportgenerator` is installed (global dotnet tool)
+- Run `dotnet test` with XPlat Code Coverage
+- Produce Cobertura XML in `TestResults/`
+- Generate HTML into `coverage-report/`
+
+## Open the report
+
+Any of the following works on Windows:
+
+```powershell
+Start-Process .\coverage-report\index.html
+```
+
+OR
+
+```powershell
+ii .\coverage-report\index.html
+```
+
+OR open the folder then click `index.html`:
+
+```powershell
+explorer .\coverage-report
+```
+
+
+
