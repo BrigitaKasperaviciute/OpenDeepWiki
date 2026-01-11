@@ -16,6 +16,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Allow root coverage.cobertura.xml to be committed
+!coverage.cobertura.xml
+
 # Mono auto generated files
 mono_crash.*
 
