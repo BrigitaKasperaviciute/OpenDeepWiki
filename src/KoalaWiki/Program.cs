@@ -30,11 +30,26 @@ builder.Services.AddSingleton(jwtOptions);
 
 // 为了向后兼容，仍然保留静态初始化作为回退
 // 这些值会在应用启动后被动态配置覆盖
-OpenAIOptions.InitConfig(builder.Configuration);
-GithubOptions.InitConfig(builder.Configuration);
-GiteeOptions.InitConfig(builder.Configuration);
-DocumentOptions.InitConfig(builder.Configuration);
-FeishuOptions.InitConfig(builder.Configuration);
+// Skip validation in testing environment to allow integration tests to run
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    OpenAIOptions.InitConfig(builder.Configuration);
+    GithubOptions.InitConfig(builder.Configuration);
+    GiteeOptions.InitConfig(builder.Configuration);
+    DocumentOptions.InitConfig(builder.Configuration);
+    FeishuOptions.InitConfig(builder.Configuration);
+}
+else
+{
+    // Initialize with test values for integration tests
+    OpenAIOptions.ChatModel = builder.Configuration.GetValue<string>("ChatModel") ?? "test-model";
+    OpenAIOptions.ChatApiKey = builder.Configuration.GetValue<string>("ChatApiKey") ?? "test-api-key";
+    OpenAIOptions.Endpoint = builder.Configuration.GetValue<string>("Endpoint") ?? "https://test-endpoint.com";
+    OpenAIOptions.AnalysisModel = builder.Configuration.GetValue<string>("AnalysisModel") ?? "test-analysis";
+    OpenAIOptions.ModelProvider = "OpenAI";
+    OpenAIOptions.MaxFileLimit = 10;
+    OpenAIOptions.EnableMem0 = false;
+}
 
 #endregion
 
@@ -53,7 +68,12 @@ builder.Services.AddResponseCompression();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddKoalaMcp();
-builder.Services.AddSerilog(Log.Logger);
+
+// Skip Serilog in Testing environment to reduce log noise
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddSerilog(Log.Logger);
+}
 
 builder.Services.AddOpenApi();
 builder.Services.AddFastApis();
@@ -68,17 +88,28 @@ builder.Services.AddTransient<GlobalMiddleware>();
 builder.Services.AddScoped<IUserContext, UserContext>();
 builder.Services.AddMemoryCache();
 
-builder.Services.AddHostedService<StatisticsBackgroundService>();
-builder.Services.AddHostedService<MiniMapBackgroundService>();
+// Skip background services in Testing environment to avoid warnings
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<StatisticsBackgroundService>();
+    builder.Services.AddHostedService<MiniMapBackgroundService>();
+}
 
 // 添加访问日志队列和后台处理服务
 builder.Services.AddSingleton<AccessLogQueue>();
-builder.Services.AddHostedService<AccessLogBackgroundService>();
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<AccessLogBackgroundService>();
+}
 
 builder.Services.AddScoped<TranslateService>();
 
 builder.Services.AddTransient<FeiShuClient>();
-builder.Services.AddHostedService<FeishuStore>();
+// Skip Feishu background service in Testing environment
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<FeishuStore>();
+}
 builder.Services.AddTransient<FeishuHttpClientHandler>();
 
 builder.Services.AddHttpClient("FeiShu")
@@ -153,14 +184,22 @@ builder.Services
             .AllowCredentials());
     });
 
-builder.Services.AddHostedService<WarehouseTask>();
-builder.Services.AddSingleton<WarehouseProcessingTask>();
-builder.Services.AddHostedService<WarehouseProcessingTask>(provider =>
-    provider.GetRequiredService<WarehouseProcessingTask>());
-builder.Services.AddHostedService<DataMigrationTask>();
-builder.Services.AddHostedService<Mem0Rag>();
+// Skip warehouse and data processing background tasks in Testing environment
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<WarehouseTask>();
+    builder.Services.AddSingleton<WarehouseProcessingTask>();
+    builder.Services.AddHostedService<WarehouseProcessingTask>(provider =>
+        provider.GetRequiredService<WarehouseProcessingTask>());
+    builder.Services.AddHostedService<DataMigrationTask>();
+    builder.Services.AddHostedService<Mem0Rag>();
+}
 
-builder.Services.AddDbContext(builder.Configuration);
+// Skip database configuration in Testing environment (handled by CustomWebApplicationFactory)
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext(builder.Configuration);
+}
 
 builder.Services.AddMapster();
 
@@ -175,10 +214,14 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 app.UseResponseCompression();
 // 添加自动迁移代码
+// Skip migrations in Testing environment (in-memory database doesn't support migrations)
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<IKoalaWikiContext>();
-    await dbContext.RunMigrateAsync();
+    if (!app.Environment.IsEnvironment("Testing"))
+    {
+        await dbContext.RunMigrateAsync();
+    }
 
     // 初始化动态配置系统
     try
@@ -195,7 +238,11 @@ using (var scope = app.Services.CreateScope())
 }
 
 // 添加中间件
-app.UseSerilogRequestLogging();
+// Skip Serilog request logging in Testing environment
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseSerilogRequestLogging();
+}
 
 app.UseCors("AllowAll");
 
@@ -318,3 +365,6 @@ app.MapSitemap();
 app.MapFastApis();
 
 app.Run();
+
+// Make the Program class accessible to integration tests
+public partial class Program { }

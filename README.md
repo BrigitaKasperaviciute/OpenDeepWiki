@@ -449,6 +449,84 @@ make build-frontend-amd  # Frontend only AMD
 
 ---
 
+# 🧪 Testing
+
+OpenDeepWiki includes a comprehensive integration test suite to ensure quality and reliability.
+
+## Running Integration Tests
+
+Run all integration tests once:
+
+```bash
+# Using dotnet CLI
+dotnet test tests/KoalaWiki.IntegrationTests/KoalaWiki.IntegrationTests.csproj
+
+# With minimal output
+dotnet test tests/KoalaWiki.IntegrationTests/KoalaWiki.IntegrationTests.csproj --verbosity minimal
+```
+
+## Running Benchmark Tests
+
+To evaluate test performance and consistency, run the benchmark script that executes tests 20 times and calculates average execution time:
+
+### Windows (PowerShell)
+
+```powershell
+.\run-tests-benchmark.ps1
+```
+
+### Linux/macOS (Bash)
+
+```bash
+chmod +x run-tests-benchmark.sh
+./run-tests-benchmark.sh
+```
+
+### Expected Output
+
+```
+Running integration tests 20 times to calculate average execution time...
+==========================================================================
+
+Run 1/20...
+  Duration: 2.5s
+  Status: PASSED
+
+Run 2/20...
+  Duration: 2.3s
+  Status: PASSED
+
+...
+
+==========================================================================
+Benchmark Results:
+==========================================================================
+Total runs: 20
+Successful runs: 20
+Total time: 48.5s
+Average execution time: 2.43s
+==========================================================================
+```
+
+## Test Coverage
+
+The integration test suite includes 18 comprehensive tests covering:
+
+- **Basic Connectivity** (3 tests) - Root, Health, Scalar endpoints
+- **Authentication** (4 tests) - Login, Register, Third-party authentication
+- **User Profile** (2 tests) - Authenticated and unauthenticated access
+- **App Configuration** (4 tests) - Public config, domain validation
+- **Warehouse** (4 tests) - Repository listing and file operations
+- **Git Repository** (1 test) - Repository information retrieval
+
+All tests follow Microsoft's ASP.NET Core integration testing best practices using:
+- WebApplicationFactory for in-memory hosting
+- Entity Framework Core InMemory provider
+- xUnit test framework
+- FluentAssertions for readable test assertions
+
+---
+
 # Community
 
 - Discord: [join us](https://discord.gg/Y3fvpnGVwt)

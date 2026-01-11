@@ -1,0 +1,5 @@
+is_global = true
+
+# Disable specific FastService.Analyzers rules
+dotnet_diagnostic.FS0001.severity = none
+dotnet_diagnostic.FS0002.severity = none

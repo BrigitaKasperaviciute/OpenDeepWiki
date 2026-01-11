@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <UserSecretsId>0f84b266-a3fb-491a-be8f-4df656fb6fcd</UserSecretsId>
+        <IsTestProject>false</IsTestProject>
+        <NoWarn>$(NoWarn);CS0168;CS0219;CS1998;CS4014;CS7022;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8619;CS8622;CS8629;CS9113</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
