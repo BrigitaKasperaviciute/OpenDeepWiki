@@ -87,7 +87,12 @@ public class KoalaWikiContext<TContext>(DbContextOptions<TContext> options)
 
     public async Task RunMigrateAsync()
     {
-        await Database.MigrateAsync();
+        // Skip migrations for in-memory databases (used in testing)
+        var providerName = Database.ProviderName;
+        if (providerName != "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            await Database.MigrateAsync();
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

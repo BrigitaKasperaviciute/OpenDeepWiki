@@ -10,7 +10,10 @@
 
     <ItemGroup>
         <PackageReference Include="FastService" />
-        <PackageReference Include="FastService.Analyzers" />
+        <PackageReference Include="FastService.Analyzers">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="LibGit2Sharp" />
         <PackageReference Include="Mapster.DependencyInjection" />
         <PackageReference Include="Mem0.NET" />

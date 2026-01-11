@@ -13,10 +13,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.Console()
-    .CreateLogger();
+// Configure Serilog - suppress logging in test environment
+var suppressLogging = Environment.GetEnvironmentVariable("SUPPRESS_LOGGING") == "true";
+if (suppressLogging)
+{
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Fatal()
+        .CreateLogger();
+}
+else
+{
+    Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Information()
+        .WriteTo.Console()
+        .CreateLogger();
+}
 
 #region Dynamic Configuration
 
@@ -318,3 +329,6 @@ app.MapSitemap();
 app.MapFastApis();
 
 app.Run();
+
+// Make the implicit Program class public for integration tests
+public partial class Program { }

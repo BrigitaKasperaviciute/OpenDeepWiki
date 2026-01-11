@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <!-- Completely disable FastService analyzers in test projects -->
+    <Analyzer Remove="@(Analyzer)" Condition="'$(MSBuildProjectName)' == 'KoalaWiki.IntegrationTests'" />
+    <PackageReference Update="FastService.Analyzers">
+      <PrivateAssets>none</PrivateAssets>
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

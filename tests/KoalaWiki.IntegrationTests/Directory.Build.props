@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <!-- Disable source generators for test project -->
+    <EnableSourceGenerators>false</EnableSourceGenerators>
+    <EnableSourceLink>false</EnableSourceLink>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Remove all analyzer references -->
+    <Analyzer Remove="@(Analyzer)" />
+  </ItemGroup>
+</Project>
